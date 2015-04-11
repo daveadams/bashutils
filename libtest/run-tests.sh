@@ -4,7 +4,7 @@
 # This software is public domain.
 #
 
-source "$(dirname "$BASH_SOURCE")/../../$TEST_TARGET" ||exit
+source "$(dirname "$BASH_SOURCE")/../$TEST_TARGET" ||exit
 
 GOOD_TESTS=0
 BAD_TESTS=0

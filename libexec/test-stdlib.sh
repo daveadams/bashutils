@@ -749,4 +749,4 @@ function __TEST_percentage
 }
 
 
-source "$(dirname "$BASH_SOURCE")/lib/run-tests.sh"
+source "$(dirname "$BASH_SOURCE")/../libtest/run-tests.sh"
