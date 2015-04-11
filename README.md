@@ -6,11 +6,13 @@ Shared bash function libraries are in `./share`:
 
 Useful command line utilities are in `./bin`:
 * `dateseq`: `seq`, but for dates, including filtering by weekday
+* `dayspast`: prints the number of days since the given date, useful with `find`
 * `getip`: prints IP for a given DNS name
 * `getname`: prints DNS name for a given IP
 * `ipsort`: sorts IPv4 addresses numerically by octets
 * `subsize`: prints the cumulative file size of each subdirectory of PWD or the specified directories
 * `uc`: prints a sorted list of the frequency of unique lines in stdin or a file or set of files
+* `yesterday`: prints yesterday's date, or the day before the provided date
 
 
 ## INSTALLATION

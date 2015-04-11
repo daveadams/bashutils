@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# dayspast
+#   prints out how many days past a given date is
+#
+# This software is public domain
+#
+
+BASHUTILS_LIB_DIR=${BASHUTILS_LIB_DIR:-/usr/share/bashutils}
+source "$BASHUTILS_LIB_DIR/stdlib.sh" ||exit
+
+function print_usage
+{
+    {
+        cat <<EOF
+Usage: $(basename "$0") <yyyy-mm-dd>
+  Prints the number of days since the given date until today.
+EOF
+    } >&2
+    exit 1
+}
+
+is_valid_date "$1" || print_usage
+
+# compare using UTC and a meaningless hour to avoid time zone issues
+TS_NOW=$(date --date="$(date +%Y-%m-%d) 12:00:00 UTC" +%s)
+TS_THEN=$(date --date="$1 12:00:00 UTC" +%s)
+
+echo $(( ( $TS_NOW - $TS_THEN ) / ( 60 * 60 * 24 ) ))

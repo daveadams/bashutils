@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# yesterday
+#   prints yesterday's date, optionally takes an argument for some other date
+#
+# This software is public domain.
+#
+
+BASHUTILS_LIB_DIR=${BASHUTILS_LIB_DIR:-/usr/share/bashutils}
+source "$BASHUTILS_LIB_DIR/stdlib.sh" ||exit
+
+function print_usage
+{
+    {
+        cat <<EOF
+Usage: $(basename "$0") [<yyyy-mm-dd>]
+  Prints yesterday's date as YYYY-MM-DD, or prints the date one day prior to
+  the date given as an argument on the command line.
+EOF
+    } >&2
+    exit 1
+}
+
+TODAY=${1:-$(date +%Y-%m-%d)}
+
+is_valid_date "$TODAY" || print_usage
+
+exec date --date="$TODAY -1 day" +%Y-%m-%d
