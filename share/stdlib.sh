@@ -1,10 +1,10 @@
 # stdlib.sh
 #   A standard library for Bash
 #
-# This software is public domain.
-#
 # Usage:
 #   source /usr/share/bashutils/stdlib.sh ||exit
+#
+# This software is public domain.
 #
 
 function die
@@ -292,6 +292,17 @@ function is_uuid
 function require_uuid
 {
     is_uuid "$1" || die "${2:-Value '$1' must be a valid UUID}"
+}
+
+# valid dates are only in the format %Y-%m-%d
+function is_valid_date
+{
+    [ "$(date --date="$1" +%Y-%m-%d)" = "$1" ]
+}
+
+function require_valid_date
+{
+    is_valid_date "$1" || die "${2:-Value '$1' must be a valid date}"
 }
 
 # if __QUIET is 1 do nothing, else call echo with the same arguments

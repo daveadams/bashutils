@@ -550,6 +550,58 @@ function __TEST_is_uuid
     should succeed is_uuid 01234567-89AB-CDEF-0A0A-ABCEDFFDECBA
 }
 
+function __TEST_is_valid_date
+{
+    should live is_valid_date
+
+    should succeed is_valid_date $(date +%Y-%m-%d)
+    should succeed is_valid_date 1066-09-21
+    should succeed is_valid_date 1900-04-30
+    should succeed is_valid_date 1946-10-22
+    should succeed is_valid_date 1975-08-04
+    should succeed is_valid_date 2015-04-11
+    should succeed is_valid_date 2029-12-18
+    should succeed is_valid_date 2040-02-14
+    should succeed is_valid_date 2198-07-04
+
+    should fail is_valid_date 2015-04-00
+    should fail is_valid_date 2016-00-03
+    should fail is_valid_date 2017-02-29
+    should fail is_valid_date 2018-08-40
+    should fail is_valid_date 2019-10-32
+    should fail is_valid_date 2020-12-88
+    should fail is_valid_date 2024-02-30
+
+    should succeed is_valid_date 1996-02-29
+    should fail    is_valid_date 1997-02-29
+    should succeed is_valid_date 2000-02-29
+    should fail    is_valid_date 1900-02-29
+    should fail    is_valid_date 2100-02-29
+    should succeed is_valid_date 2084-02-29
+}
+
+function __TEST_require_valid_date
+{
+    should die  require_valid_date
+
+    should live require_valid_date $(date +%Y-%m-%d)
+    should live require_valid_date 1066-09-21
+    should live require_valid_date 1975-08-04
+    should live require_valid_date 2040-02-14
+    should live require_valid_date 2198-07-04
+
+    should die  require_valid_date 2015-04-00
+    should die  require_valid_date 2016-00-03
+    should die  require_valid_date 2019-10-32
+    should die  require_valid_date 2024-02-30
+
+    should live require_valid_date 1996-02-29
+    should live require_valid_date 2000-02-29
+    should die  require_valid_date 1900-02-29
+    should die  require_valid_date 2100-02-29
+    should live require_valid_date 2084-02-29
+}
+
 function __TEST_say
 {
     __QUIET=     should print "hello world"  say "hello world"
