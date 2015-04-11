@@ -6,7 +6,7 @@
 # This software is public domain.
 #
 
-TEST_TARGET=stdlib.sh
+TEST_TARGET=share/stdlib.sh
 
 function __TEST_die
 {

@@ -1,9 +1,14 @@
 Libraries and utilities to make Bash and the command line more efficient.
 
 
+## LIBRARIES
+
+Bash function libraries are in `./share`. Utility scripts are in `./bin`.
+
+
 ## INSTALLATION
 
-To use `stdlib.sh`, simply deploy in any convenient location (`/usr/share/bashutils` is recommended).
+Copy the contents of `./share` to `/usr/share/bashutils`, and the contents of `./bin` to `/usr/local/bin`.
 
 
 ## USAGE
@@ -15,7 +20,7 @@ To use `stdlib.sh` in your Bash scripts, include the following line:
 
 ## TESTING
 
-To test `stdlib.sh`, run this command from the project root directory:
+To test `share/stdlib.sh`, run this command from the project root directory:
 
     $ test/test-stdlib.sh
 
