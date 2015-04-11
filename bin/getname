@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# getname
+#   given an IP, looks up the name from any PTR records
+#
+# This software is public domain.
+#
+
+function print_usage
+{
+    {
+        cat <<EOF
+Usage: $(basename "$0") <ip>
+  Prints the DNS names reported by any PTR records for <ip>.
+EOF
+    } >&2
+    exit 1
+}
+
+[ -n "$1" ] || print_usage
+
+RESULT=$(dig -x "$1" +short | sed 's/\.$//')
+
+[ -n "$RESULT" ] || exit 1
+
+echo "$RESULT"

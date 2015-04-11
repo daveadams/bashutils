@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# getip
+#   Given a DNS name, prints the corresponding IP address, including /etc/hosts, etc
+#
+# This software is public domain
+#
+
+function print_usage
+{
+    {
+        cat <<EOF
+Usage: $(basename "$0") <dnsname>
+  Looks up <dnsname> in /etc/hosts and in DNS and prints the IP address(es).
+EOF
+    } >&2
+    exit 1
+}
+
+[ -n "$1" ] || print_usage
+
+getent hosts "$1" |awk '{print $1}'
