@@ -1,9 +1,15 @@
 Libraries and utilities to make Bash and the command line more efficient.
 
 
-## LIBRARIES
+## COMPONENTS
 
-Bash function libraries are in `./share`. Utility scripts are in `./bin`.
+Shared bash function libraries are in `./share`:
+
+* `stdlib.sh`: useful shared functions including error reporting, type checks, file state checks, and string matching
+
+Useful command line utilities are in `./bin`:
+* `uc`: prints a sorted list of the frequency of unique lines in stdin or a file or set of files
+* `subsize`: prints the cumulative file size of each subdirectory of PWD or the specified directories
 
 
 ## INSTALLATION
@@ -23,6 +29,10 @@ To use `stdlib.sh` in your Bash scripts, include the following line:
 To test `share/stdlib.sh`, run this command from the project root directory:
 
     $ test/test-stdlib.sh
+
+To test the utilities in `./bin` along with `stdlib.sh` (on which most of them rely), specify an alternative path to the library directory using `BASHUTILS_LIB_DIR`, eg:
+
+    $ BASHUTILS_LIB_DIR=./share bin/subsize
 
 
 ## AUTHOR

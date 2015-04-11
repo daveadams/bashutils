@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# uc
+#   Prints a sorted count of unique lines.
+#
+# This software is public domain.
+#
+
+BASHUTILS_LIB_DIR=${BASHUTILS_LIB_DIR:-/usr/share/bashutils}
+source "$BASHUTILS_LIB_DIR/stdlib.sh" ||exit
+
+function print_usage
+{
+    {
+        cat <<EOF
+Usage: $(basename "$0") [<options>] [--] [<filename> [...]]
+  Prints a sorted count of unique lines from given files. If no files are
+  specified, reads from STDIN.
+
+  Options (must come before any filenames in the argument list):
+    -r        Reverses the sort order (low-to-high instead of high-to-low)
+    -n <num>  Prints just the first <num> results
+    -T <dir>  Uses <dir> as a temporary sorting location for 'sort'
+    -h        Print this help
+    --        All further arguments should be considered filenames
+EOF
+    } >&2
+    exit 1
+}
+
+# set defaults
+TRIM_RESULTS_CMD=
+SECOND_SORT_ARGS="-bnr"
+SORT_TEMP_ARGS=
+
+while [ "${1:0:1}" = "-" ]
+do
+    case "$1" in
+        -r)
+            SECOND_SORT_ARGS="-bn"
+            ;;
+        -n)
+            require_integer "$2"
+            if [ "$2" -lt 1 ]
+            then
+                die "Specified result count '$2' must be greater than zero"
+            fi
+            TRIM_RESULTS_CMD="| head -n $2"
+            shift
+            ;;
+        -T)
+            require_directory "$2"
+            require_writable "$2"
+            SORT_TEMP_ARGS="-T \"$2\""
+            shift
+            ;;
+        -h|--help|-?)
+            print_usage
+            ;;
+        --)
+            # assume the rest are filenames
+            shift
+            break
+            ;;
+    esac
+    shift
+done
+
+for FILENAME in "$@"
+do
+    require_readable "$FILENAME"
+    INITIAL_CMD="cat \"\$@\" |"
+done
+
+eval "${INITIAL_CMD} sort ${SORT_TEMP_ARGS} | uniq -c | sort ${SORT_TEMP_ARGS} ${SECOND_SORT_ARGS} ${TRIM_RESULTS_CMD}"
+# if [ -z "$*" ]
+# then
+#     # use stdin
+#     eval "sort -T $SORTTEMP |uniq -c |$SORT |$HEAD"
+# else
+#     # use files
+#     eval "cat $@ |sort -T $SORTTEMP |uniq -c |$SORT |$HEAD"
+# fi

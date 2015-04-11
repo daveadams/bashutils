@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# subsize
+#   Prints the recursive size of each subdirectory
+#
+# This software is public domain
+#
+
+BASHUTILS_LIB_DIR=${BASHUTILS_LIB_DIR:-/usr/share/bashutils}
+source "$BASHUTILS_LIB_DIR/stdlib.sh" ||exit
+
+function print_usage
+{
+    cat <<EOF >&2
+Usage: $(basename "$0") [-k] [<dirname> [...]]
+  Prints the recursive size (as reported by 'du') of each subdirectory of the
+  specified directory or directories. Defaults to the current directory.
+
+Options:
+  -k     Print size in KB (defaults to using a dynamic scale like '-h' in 'du')
+EOF
+    exit 1
+}
+
+DU_OPT=-sh
+while [ "${1:0:1}" = "-" ]
+do
+    case "$1" in
+        -k)
+            # print results in fixed KB
+            DU_OPT=-sk
+            ;;
+        --)
+            # end argument processing
+            shift
+            break
+            ;;
+        *)
+            print_usage
+            ;;
+    esac
+    shift
+done
+
+require_dirs "$@"
+
+find "$@" -mindepth 1 -maxdepth 1 -type d -print0 |xargs -0 du $DU_OPT
