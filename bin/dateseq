@@ -1,0 +1,135 @@
+#!/bin/bash
+#
+# dateseq
+#   seq for dates
+#
+# This software is public domain.
+#
+
+BASHUTILS_LIB_DIR=${BASHUTILS_LIB_DIR:-/usr/share/bashutils}
+source "$BASHUTILS_LIB_DIR/stdlib.sh" ||exit
+
+function print_usage
+{
+    cat <<EOF >&2
+Usage: $(basename "$0") <start-date> [<increment>] <end-date>
+  Prints dates from <start-date> to <end-date>.
+
+  * If start-date is later than end-date, the dates will be printed in reverse
+    order.
+
+  * If <increment> is a number, that number of days will be skipped between
+    each date printed.
+
+  * If <increment> is the name of a day of the week understood by 'date'--for
+    example: 'mon', 'Tuesday', or 'FRI'--then only dates between <start-date>
+    and <end-date> which are that weekday will be printed.
+EOF
+    exit 1
+}
+
+function convert_string_to_day_of_week
+{
+    date --date="$1" +%w 2>/dev/null
+}
+
+[ $# -ge 2 ] || print_usage
+
+require_valid_date "$1"
+START_DATE="$1"
+
+if is_valid_date "$2"
+then
+    INCREMENT="1"
+    END_DATE="$2"
+    [ $# -eq 2 ] || print_usage
+else
+    INCREMENT="$2"
+    is_valid_date "$3" || print_usage
+    END_DATE="$3"
+    [ $# -eq 3 ] || print_usage
+fi
+
+REVERSE_ORDER=0
+if [[ "$START_DATE" > "$END_DATE" ]]
+then
+    REVERSE_ORDER=1
+fi
+
+if is_integer "$INCREMENT"
+then
+    if [ "$INCREMENT" -eq 0 ]
+    then
+        die "Increment may not be zero"
+    fi
+    if [ "$INCREMENT" -lt 0 ]
+    then
+        INCREMENT=$(( $INCREMENT * -1 ))
+    fi
+else
+    DAY_OF_WEEK=$(date --date="$INCREMENT" +%w 2>/dev/null)
+    if ! is_integer "$DAY_OF_WEEK" || [ "$DAY_OF_WEEK" -lt 0 ] || [ "$DAY_OF_WEEK" -gt 6 ]
+    then
+        die "Invalid day name '$INCREMENT'"
+    fi
+    START_DATE_DAY_OF_WEEK=$(date --date="$START_DATE" +%w 2>/dev/null)
+
+    if [ "$REVERSE_ORDER" = "0" ]
+    then
+        DOW_DIFF=$(( $DAY_OF_WEEK - $START_DATE_DAY_OF_WEEK ))
+        if [ "$DOW_DIFF" -lt 0 ]
+        then
+            DOW_DIFF=$(( $DOW_DIFF + 7 ))
+        fi
+        # adjust start date to the appropriate day of the week
+        START_DATE=$(date --date="$START_DATE +$DOW_DIFF day" +%Y-%m-%d)
+
+        # if start date is now later than end_date, then there are no such
+        # days of the week between the two and we should exit with no output
+        if [[ "$START_DATE" > "$END_DATE" ]]
+        then
+            exit
+        fi
+    else
+        # reverse_order = true
+        DOW_DIFF=$(( $START_DATE_DAY_OF_WEEK - $DAY_OF_WEEK ))
+        if [ "$DOW_DIFF" -lt 0 ]
+        then
+            DOW_DIFF=$(( $DOW_DIFF + 7 ))
+        fi
+        # adjust start date to the appropriate day of the week
+        START_DATE=$(date --date="$START_DATE -$DOW_DIFF day" +%Y-%m-%d)
+
+        # if start date is now earlier than end_date, then there are no such
+        # days of the week between the two and we should exit with no output
+        if [[ "$START_DATE" < "$END_DATE" ]]
+        then
+            exit
+        fi
+    fi
+
+    INCREMENT=7
+fi
+
+if [ "$REVERSE_ORDER" = "1" ]
+then
+    INCREMENT=$(( $INCREMENT * -1 ))
+else
+    INCREMENT="+$INCREMENT"
+fi
+
+CURRENT_DATE="$START_DATE"
+while [ 1 ]
+do
+    if [ "$REVERSE_ORDER" = "0" ] && [[ "$CURRENT_DATE" > "$END_DATE" ]]
+    then
+        break
+    fi
+    if [ "$REVERSE_ORDER" = "1" ] && [[ "$CURRENT_DATE" < "$END_DATE" ]]
+    then
+        break
+    fi
+
+    echo "$CURRENT_DATE"
+    CURRENT_DATE="$(date --date="$CURRENT_DATE $INCREMENT day" +%Y-%m-%d)"
+done

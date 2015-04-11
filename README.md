@@ -8,8 +8,9 @@ Shared bash function libraries are in `./share`:
 * `stdlib.sh`: useful shared functions including error reporting, type checks, file state checks, and string matching
 
 Useful command line utilities are in `./bin`:
-* `uc`: prints a sorted list of the frequency of unique lines in stdin or a file or set of files
+* `dateseq`: `seq`, but for dates, including filtering by weekday
 * `subsize`: prints the cumulative file size of each subdirectory of PWD or the specified directories
+* `uc`: prints a sorted list of the frequency of unique lines in stdin or a file or set of files
 
 
 ## INSTALLATION
